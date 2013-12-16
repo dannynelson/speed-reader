@@ -6,7 +6,11 @@ $('p').each(function(idx, item) {
   var words = $node.text().split(' ');
   $node.text('');
   words.forEach(function(word) {
-    debugger;
     $node.append('<span>' + word + '</span> ');
   });
+});
+
+$('span').on('click', function() {
+  debugger;
+  $(this).addClass('selected');
 });
