@@ -22,7 +22,7 @@ var enterSpeedReadMode = function() {
   $('.sr').addClass('faded');
 
   // add keypress listeners
-  $(document).keydown(function(e){
+  $(document).keydown(createSpeedReadEvents = function(e){
     // enter
     if (e.keyCode === 13) play();
     // escape
@@ -36,6 +36,12 @@ var enterSpeedReadMode = function() {
 
 var exitSpeedReadMode = function() {
   unwrapTextFromSpans();
+  // TODO: check if it causes problems
+  $(document).off('keydown');
+  $(document).on('keydown', function(e){
+    // alt-s to enter speed read mode
+    if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
+  });
   // $('.sr.selected').removeClass('selected');
   // $('.sr.faded').removeClass('faded');
 };
