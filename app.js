@@ -35,8 +35,9 @@ var enterSpeedReadMode = function() {
 };
 
 var exitSpeedReadMode = function() {
-  $('.sr.selected').removeClass('selected');
-  $('.sr.faded').removeClass('faded');
+  unwrapTextFromSpans();
+  // $('.sr.selected').removeClass('selected');
+  // $('.sr.faded').removeClass('faded');
 };
 
 var selectNext = function() {
@@ -57,17 +58,22 @@ var wrapTextInSpans = function() {
     $newNodes = [];
     $(item.childNodes).each(function(j, node) {
       // for text
-      if (node.nodeName === "#text"){
+      if (node.nodeName === "#text") {
         $node = $(node);
         var words = $node.text().split(' ');
-        html = ''
+        html = ' ';
         words.forEach(function(word) {
-          html += '<span class="sr">' + word + ' </span> ';
+          if (word !== '') html += '<span class="sr">' + word + ' </span>';
         });
+        html += ' ';
         $node.replaceWith(html);
       } else {
         $node = $(node).wrap('<span class="sr"></span>');
       }
     });
   });
+};
+
+var unwrapTextFromSpans = function() {
+  $('.sr').contents().unwrap();
 };
