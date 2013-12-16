@@ -1,20 +1,13 @@
-var wrapTextInSpans = function() {
-  $('p').each(function(idx, item) {
-    $node = $(item);
-    var words = $node.text().split(' ');
-    $node.text('');
-    words.forEach(function(word) {
-      $node.append('<span class="sr">' + word + '</span> ');
-    });
-  });
-};
 
-wrapTextInSpans();
+
+$(document).keydown(function(e){
+  debugger;
+  if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
+});
+
 
 $('.sr').on('click', function(event){
-  if (event.altKey) {
-    enterSpeedReadMode($(this));
-  }
+  $(this).addClass('selected');
 });
 
 var play = function(intervalID) {
@@ -25,11 +18,11 @@ var play = function(intervalID) {
   });
 };
 
-var enterSpeedReadMode = function($clickedWord) {
+var enterSpeedReadMode = function() {
   // add css classes
-  $clickedWord.addClass('selected');
+  wrapTextInSpans();
+  $('.sr').first().addClass('selected');
   $('.sr').addClass('faded');
-  console.log('altClicked!');
 
   // add keypress listeners
   $(document).keydown(function(e){
@@ -57,4 +50,15 @@ var selectPrev = function() {
   $prev = $('.sr.selected').prev();
   $('.sr.selected').removeClass('selected');
   $prev.addClass('selected');
+};
+
+var wrapTextInSpans = function() {
+  $('p').each(function(idx, item) {
+    $node = $(item);
+    var words = $node.text().split(' ');
+    $node.text('');
+    words.forEach(function(word) {
+      $node.append('<span class="sr">' + word + '</span> ');
+    });
+  });
 };
