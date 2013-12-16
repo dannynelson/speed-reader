@@ -1,12 +1,10 @@
-
-
-$(document).keydown(function(e){
-  debugger;
+$(document).on('keydown', function(e){
   if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
 });
 
 
-$('.sr').on('click', function(event){
+$('body').on('click', '.sr', function(event){
+  $('.selected').removeClass('selected');
   $(this).addClass('selected');
 });
 
@@ -14,12 +12,12 @@ var play = function(intervalID) {
   intervalID = setInterval(selectNext, 200);
   $(document).keydown(function(e) {
     window.clearInterval(intervalID);
-    exitSpeedReadMode();
   });
 };
 
 var enterSpeedReadMode = function() {
   // add css classes
+  console.log('enter speed read');
   wrapTextInSpans();
   $('.sr').first().addClass('selected');
   $('.sr').addClass('faded');
@@ -28,6 +26,8 @@ var enterSpeedReadMode = function() {
   $(document).keydown(function(e){
     // enter
     if (e.keyCode === 13) play();
+    // left arrow
+    if (e.keyCode === 27) exitSpeedReadMode();
     // left arrow
     if (e.keyCode === 37) selectPrev();
     // right arrow
