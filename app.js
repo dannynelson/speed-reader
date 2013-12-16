@@ -39,11 +39,8 @@ var exitSpeedReadMode = function() {
   // TODO: check if it causes problems
   $(document).off('keydown');
   $(document).on('keydown', function(e){
-    // alt-s to enter speed read mode
     if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
   });
-  // $('.sr.selected').removeClass('selected');
-  // $('.sr.faded').removeClass('faded');
 };
 
 var selectNext = function() {
