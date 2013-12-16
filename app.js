@@ -1,12 +1,6 @@
 // alert('script worked!');
 console.log('hello');
 
-$('p').on('click', function(event){
-  if (event.altKey) {
-    console.log('altClicked!');
-    wrapTextInSpans();
-  }
-});
 
 var wrapTextInSpans = function() {
   $('p').each(function(idx, item) {
@@ -19,21 +13,29 @@ var wrapTextInSpans = function() {
   });
 };
 
+wrapTextInSpans();
 
-// $('span').on('click', function() {
-//   $(this).addClass('sr-selected');
-// });
+$('.sr').on('click', function(event){
+  if (event.altKey) {
+    $(this).addClass('selected');
+    $('.sr').addClass('faded');
+    console.log('altClicked!');
+  }
+});
 
-// $(document).keydown(function(e){
-//   debugger;
-//   if (e.keyCode == 37) {
-//     $prev = $('.sr-selected').prev();
-//     $('.sr-selected').removeClass('sr-selected');
-//     $prev.addClass('sr-selected');
-//   }
-//   if (e.keyCode == 39) {
-//     $next = $('.sr-selected').next();
-//     $('.sr-selected').removeClass('sr-selected');
-//     $next.addClass('sr-selected');
-//   }
-// });
+$(document).keydown(function(e){
+  if (e.keyCode == 37) selectPrev();
+  if (e.keyCode == 39) selectNext();
+});
+
+var selectNext = function() {
+  $next = $('.sr.selected').next();
+  $('.sr.selected').removeClass('selected');
+  $next.addClass('selected');
+};
+
+var selectPrev = function() {
+  $prev = $('.sr.selected').prev();
+  $('.sr.selected').removeClass('selected');
+  $prev.addClass('selected');
+};

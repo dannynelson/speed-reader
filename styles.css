@@ -1,7 +1,7 @@
-.sr {
+.sr.faded {
   opacity: 0.5;
 }
 
-.sr-selected {
+.sr.selected {
   opacity: 1;
 }
