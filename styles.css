@@ -2,6 +2,6 @@ span {
   opacity: 0.5;
 }
 
-.selected {
+.sr-selected {
   opacity: 1;
 }

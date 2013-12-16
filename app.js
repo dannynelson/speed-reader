@@ -11,6 +11,14 @@ $('p').each(function(idx, item) {
 });
 
 $('span').on('click', function() {
-  debugger;
-  $(this).addClass('selected');
+  $(this).addClass('sr-selected');
+});
+
+$(document).keydown(function(e){
+  if (e.keyCode == 37) {}
+  if (e.keyCode == 39) {
+    $next = $('.sr-selected').next();
+    $('.sr-selected').removeClass('sr-selected');
+    $next.addClass('sr-selected');
+  }
 });
