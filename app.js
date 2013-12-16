@@ -1,7 +1,7 @@
 $(document).on('keydown', function(e){
+  // alt-s to enter speed read mode
   if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
 });
-
 
 $('body').on('click', '.sr', function(event){
   $('.selected').removeClass('selected');
@@ -17,7 +17,6 @@ var play = function(intervalID) {
 
 var enterSpeedReadMode = function() {
   // add css classes
-  console.log('enter speed read');
   wrapTextInSpans();
   $('.sr').first().addClass('selected');
   $('.sr').addClass('faded');
@@ -26,7 +25,7 @@ var enterSpeedReadMode = function() {
   $(document).keydown(function(e){
     // enter
     if (e.keyCode === 13) play();
-    // left arrow
+    // escape
     if (e.keyCode === 27) exitSpeedReadMode();
     // left arrow
     if (e.keyCode === 37) selectPrev();
@@ -53,12 +52,22 @@ var selectPrev = function() {
 };
 
 var wrapTextInSpans = function() {
-  $('p').each(function(idx, item) {
-    $node = $(item);
-    var words = $node.text().split(' ');
-    $node.text('');
-    words.forEach(function(word) {
-      $node.append('<span class="sr">' + word + '</span> ');
+  debugger;
+  $('p').each(function(i, item) {
+    $newNodes = [];
+    $(item.childNodes).each(function(j, node) {
+      // for text
+      if (node.nodeName === "#text"){
+        $node = $(node);
+        var words = $node.text().split(' ');
+        html = ''
+        words.forEach(function(word) {
+          html += '<span class="sr">' + word + ' </span> ';
+        });
+        $node.replaceWith(html);
+      } else {
+        $node = $(node).wrap('<span class="sr"></span>');
+      }
     });
   });
 };
