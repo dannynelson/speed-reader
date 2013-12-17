@@ -77,6 +77,30 @@ var wrapTextInSpans = function() {
   });
 };
 
+var wrapTextInSpans = function() {
+  $('p').each(function(i, item) {
+    $newNodes = [];
+    $(item.childNodes).each(function(j, node) {
+      // for text
+      if (node.nodeName === "#text") {
+        
+        $node = $(node);
+        var sentences = $node.text().split('.');
+        var phrases = sentences.split(',');
+        html = ' ';
+        words.forEach(function(word) {
+          if (word !== '') html += '<span class="sr">' + word + ' </span>';
+        });
+        html += ' ';
+        $node.replaceWith(html);
+      } else {
+        $node = $(node).wrap('<span class="sr"></span>');
+      }
+    });
+  });
+};
+
+
 var unwrapTextFromSpans = function() {
   $('.sr').contents().unwrap();
 };
