@@ -1,5 +1,12 @@
 var $oldHTML; //save copy of old html
 
+var settings;
+
+chrome.storage.local.get('speed', function (result) {
+  debugger;
+  settings = result;
+});
+
 // =================
 // EVENT LISTENERS
 // =================
@@ -279,7 +286,7 @@ var wrapChunksInSpans = function() {
   };
 
   // main logic
-  $('p').each(function(i, p) {
+  $('p, li').each(function(i, p) {
     // var $childNodes = $(p.childNodes).clone();// make a duplicate
     // $(p).html('');// clear original
     var text = $(p).text();

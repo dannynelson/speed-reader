@@ -11,11 +11,22 @@
 
   "options_page": "options.html",
 
+  "permissions": [
+    "storage"
+  ],
+
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "css": ["content-scripts/styles.css"],
-      "js": ["content-scripts/jquery.js", "content-scripts/underscore.js", "content-scripts/app.js", "content-scripts/parts-of-speech/verbs.js", "content-scripts/parts-of-speech/prepositions.js", "content-scripts/parts-of-speech/conjunctions.js"]
+      "js": [
+        "content-scripts/jquery.js", 
+        "content-scripts/underscore.js", 
+        "content-scripts/app.js", 
+        "content-scripts/parts-of-speech/verbs.js", 
+        "content-scripts/parts-of-speech/prepositions.js", 
+        "content-scripts/parts-of-speech/conjunctions.js"
+      ]
     }
   ]
 }

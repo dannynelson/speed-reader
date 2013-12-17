@@ -3,8 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Options Page</title>
+  <script src="content-scripts/jquery.js"></script>
+  <script src="options.js"></script>
 </head>
 <body>
-  This is an options page
+  <h1>Speed Reader Settings</h1>
+  <div>Transition Speed: </div>
+  <select class="speed-selection">
+    <option value="1000">1 per second</option>
+    <option value="500">2 per second</option>
+    <option value="250">4 per second</option>
+  </select><br/>
+
+  <button class="save">Save Changes</button>
+
 </body>
 </html>
