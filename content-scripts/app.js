@@ -1,53 +1,55 @@
 // =================
-// KEYDOWN LISTENERS
+// EVENT LISTENERS
 // =================
 
-var listenForAltS = function() {
-  $(document).on('keydown', function(e){
-    if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
-    listenForWordClicks();
-  });
+var listeners = {
+  altS: function() {
+    $(document).on('keydown', function(e){
+      if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
+      listeners.wordClicks();
+    });
+  },
+
+  wordClicks: function() {
+    $('body').on('click', '.sr', function(event){
+      $('.selected').removeClass('selected');
+      $(this).addClass('selected');
+    });
+  },
+
+  srNavigartionKeys: function() {
+    $(document).keydown(function(e){
+      // enter
+      if (e.keyCode === 13) play();
+      // escape
+      if (e.keyCode === 27) exitSpeedReadMode();
+      // left arrow
+      if (e.keyCode === 37) selectPrev();
+      // right arrow
+      if (e.keyCode === 39) selectNext();
+    });
+  }
 };
 
-var listenForWordClicks = function() {
-  $('body').on('click', '.sr', function(event){
-    $('.selected').removeClass('selected');
-    $(this).addClass('selected');
-  });
-};
+listeners.altS();
 
-var listenForSRNavigartionKeys = function() {
-  $(document).keydown(function(e){
-    // enter
-    if (e.keyCode === 13) play();
-    // escape
-    if (e.keyCode === 27) exitSpeedReadMode();
-    // left arrow
-    if (e.keyCode === 37) selectPrev();
-    // right arrow
-    if (e.keyCode === 39) selectNext();
-  });
-};
-
-listenForAltS();
-
-// =================
+// ==============
 // HELPER METHODS
-// =================
+// ==============
 
 var enterSpeedReadMode = function() {
   // add css classes
   wrapChunksInSpans();
   $('.sr').first().addClass('selected');
   $('.sr').addClass('faded');
-  listenForSRNavigartionKeys();
+  listeners.srNavigartionKeys();
 };
 
 var exitSpeedReadMode = function() {
   unwrapTextFromSpans();
   // TODO: check if it causes problems
   $(document).off('keydown');
-  listenForAltS();
+  listeners.altS();
 };
 
 var play = function(intervalID) {
@@ -82,6 +84,10 @@ var selectPrev = function() {
   }
 };
 
+// ============
+// PAGE PARSERS
+// ============
+
 var wrapSingleWordsInSpans = function() {
   $('p').each(function(i, item) {
     $(item.childNodes).each(function(j, node) {
@@ -102,6 +108,8 @@ var wrapSingleWordsInSpans = function() {
     });
   });
 };
+
+//
 
 var wrapChunksInSpans = function() {
   $('p').each(function(i, p) {
@@ -150,7 +158,9 @@ var wrapChunksInSpans = function() {
   });
 };
 
-
+// ===================
+// PAGE PARSER HELPERS
+// ===================
 
 var checkForPhraseEnd = function(word, phraseLength) {
   return phraseLength > 2 &&
