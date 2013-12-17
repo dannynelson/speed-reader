@@ -42,15 +42,12 @@ var exitSpeedReadMode = function() {
   unwrapTextFromSpans();
   // TODO: check if it causes problems
   $(document).off('keydown');
-  $(document).on('keydown', function(e){
-    if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
-  });
+  listenForAltS();
 };
 
 var selectNext = function() {
   if ($('.sr.selected').next().length === 0) {
     var nextAvailable = $('.sr.selected').parent().next().find('.sr')[0];
-    debugger;
     $('.sr.selected').removeClass('selected');
     $(nextAvailable).addClass('selected');
   } else {
@@ -73,27 +70,26 @@ var selectPrev = function() {
   }
 };
 
-// var wrapSingleWordsInSpans = function() {
-//   debugger;
-//   $('p').each(function(i, item) {
-//     $(item.childNodes).each(function(j, node) {
-//       // for text
-//       if (node.nodeName === "#text") {
-//         $node = $(node);
-//         var words = $node.text().split(' ');
-//         html = ' ';
-//         words.forEach(function(word) {
-//           debugger;
-//           if (word !== '') html += '<span class="sr">' + word + ' </span>';
-//         });
-//         html += ' ';
-//         $node.replaceWith(html);
-//       } else {
-//         $node = $(node).wrap('<span class="sr"></span>');
-//       }
-//     });
-//   });
-// };
+var wrapSingleWordsInSpans = function() {
+  $('p').each(function(i, item) {
+    $(item.childNodes).each(function(j, node) {
+      // for text
+      if (node.nodeName === "#text") {
+        $node = $(node);
+        var words = $node.text().split(' ');
+        html = ' ';
+        words.forEach(function(word) {
+          debugger;
+          if (word !== '') html += '<span class="sr">' + word + ' </span>';
+        });
+        html += ' ';
+        $node.replaceWith(html);
+      } else {
+        $node = $(node).wrap('<span class="sr"></span>');
+      }
+    });
+  });
+};
 
 var wrapChunksInSpans = function() {
   $('p').each(function(i, p) {
@@ -101,27 +97,24 @@ var wrapChunksInSpans = function() {
     $(p).html('');
     var phrase = '';
     var phraseLength = 0;
+
+    var appendPhraseToNode = function() {
+      phrase = '<span class="sr">' + phrase +'</span>';
+      $(p).append(phrase);
+      phrase = '';
+      phraseLength = 0;
+    };
+
     $childNodes.each(function(j, node) {
       if (node.nodeName === "#text") {
         var words = $(node).text().split(' ');
         words.forEach(function(word) {
-          if (phraseLength > 1 && (prepositions[word] || verbs[word] || conjunctions[word]) || word[0] === '(' || word[0] === '"') {
-            phrase = '<span class="sr">' + phrase +'</span>';
-            $(p).append(phrase);
-            phrase = '';
-            phraseLength = 0;
-          }
-          if (word === '') {
-            phrase += ' ';
-          } else {
+          if (checkForPhraseEnd(word, phraseLength)) appendPhraseToNode();
+          if (word === '') phrase += ' ';
+          if (word !== '') {
             phrase += word + ' ';
             phraseLength++;
-            if (word[word.length-1] === '.' || word[word.length-1] === ',') {
-              phrase = '<span class="sr">' + phrase +'</span>';
-              $(p).append(phrase);
-              phrase = '';
-              phraseLength = 0;
-            }
+            if (word[word.length-1] === '.' || word[word.length-1] === ';' || word[word.length-1] === ',') appendPhraseToNode();
           }
         });
       } else {
@@ -131,6 +124,12 @@ var wrapChunksInSpans = function() {
       }
     });
   });
+};
+
+var checkForPhraseEnd = function(word, phraseLength) {
+  return phraseLength > 2 &&
+  (prepositions[word] || verbs[word] || conjunctions[word] || word[word.length-2]+word[word.length-1] === 'ed') ||
+  (word[0] === '(' || word[0] === '"');
 };
 
 var unwrapTextFromSpans = function() {
