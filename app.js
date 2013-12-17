@@ -1,7 +1,11 @@
-$(document).on('keydown', function(e){
-  // alt-s to enter speed read mode
-  if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
-});
+var listenForAltS = function() {
+  $(document).on('keydown', function(e){
+    // alt-s to enter speed read mode
+    if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
+  });
+};
+
+listenForAltS();
 
 $('body').on('click', '.sr', function(event){
   $('.selected').removeClass('selected');
@@ -9,7 +13,7 @@ $('body').on('click', '.sr', function(event){
 });
 
 var play = function(intervalID) {
-  intervalID = setInterval(selectNext, 500);
+  intervalID = setInterval(selectNext, 400);
   $(document).keydown(function(e) {
     window.clearInterval(intervalID);
   });
@@ -44,10 +48,10 @@ var exitSpeedReadMode = function() {
 };
 
 var selectNext = function() {
-  debugger;
   if ($('.sr.selected').next().length === 0) {
-    debugger;
     var nextAvailable = $('.sr.selected').parent().next().find('.sr')[0];
+    debugger;
+    $('.sr.selected').removeClass('selected');
     $(nextAvailable).addClass('selected');
   } else {
     $next = $('.sr.selected').next();
@@ -57,9 +61,16 @@ var selectNext = function() {
 };
 
 var selectPrev = function() {
-  $prev = $('.sr.selected').prev();
-  $('.sr.selected').removeClass('selected');
-  $prev.addClass('selected');
+  if ($('.sr.selected').prev().length === 0) {
+    var previousNodes = $('.sr.selected').parent().prev().find('.sr');
+    var previousAvailabe = previousNodes[previousNodes.length-1];
+    $('.sr.selected').removeClass('selected');
+    $(previousAvailabe).addClass('selected');
+  } else {
+    $prev = $('.sr.selected').prev();
+    $('.sr.selected').removeClass('selected');
+    $prev.addClass('selected');
+  }
 };
 
 // var wrapSingleWordsInSpans = function() {
