@@ -1,9 +1,12 @@
+var $oldHTML; //save copy of old html
+
 // =================
 // EVENT LISTENERS
 // =================
 
 var listeners = {
   altS: function() {
+    $oldHTML = $('body').clone();
     $(document).on('keydown', function(e){
       if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
       listeners.wordClicks();
@@ -46,14 +49,15 @@ var enterSpeedReadMode = function() {
 };
 
 var exitSpeedReadMode = function() {
-  unwrapTextFromSpans();
+  $('body').html($oldHTML);
+  // unwrapTextFromSpans();
   // TODO: check if it causes problems
   $(document).off('keydown');
   listeners.altS();
 };
 
 var play = function(intervalID) {
-  intervalID = setInterval(selectNext, 300);
+  intervalID = setInterval(selectNext, 400);
   $(document).keydown(function(e) {
     window.clearInterval(intervalID);
   });
@@ -243,7 +247,7 @@ var wrapChunksInSpans = function() {
     phraseWords = [];
 
     phrase.split(' ').forEach(function(word) {
-      if (phraseWords.length > 2 && (verbs[word] || verbs[word.slice(0, word.length-1)]) || verbs[word.slice(0, word.length-2)]) {
+      if (phraseWords.length > 1 && (verbs[word] || verbs[word.slice(0, word.length-1)]) || verbs[word.slice(0, word.length-2)]) {
         phrases.push(phraseWords.join(' '));
         phraseWords = [];
       }
@@ -264,29 +268,32 @@ var wrapChunksInSpans = function() {
     };
 
     string.split(' ').forEach(function(word) {
-      if ( (/[\("]/).test(word[0]) ) addPhrase();
+      if ( (/[\("“]/).test(word[0]) ) addPhrase();
       phraseWords.push(word);
-      if ( (/[.,;"”!-\)]/).test(word[word.length-1]) ) addPhrase();
+      if ( (/[.,:;"”!-\)\]]/).test(word[word.length-1]) ) addPhrase();
     });
+
+    addPhrase();
 
     return phrases;
   };
 
   // main logic
   $('p').each(function(i, p) {
-    var $childNodes = $(p.childNodes).clone();// make a duplicate
-    $(p).html('');// clear original
+    // var $childNodes = $(p.childNodes).clone();// make a duplicate
+    // $(p).html('');// clear original
+    var text = $(p).text();
 
-    $childNodes.each(function(j, node) {
-      if (node.nodeName === "#text") {
-        node = wrapWithSpan($(node).text(), 'sr-text');
-      }
-      var phrases = textToPhrases($(node).text());
+    // text.each(function(j, node) {
+    //   if (node.nodeName === "#text") {
+    //     node = wrapWithSpan($(node).text(), 'sr-text');
+    //   }
+      var phrases = textToPhrases(text);
       phrases = wrapPhrasesWithSpans(phrases);
       newNode = phrases.join(' ');
-      var $newNode = $(node).html(newNode);
-      $(p).append($newNode);
-    });
+      // var $newNode = $(node).html(newNode);
+      $(p).html(newNode);
+    // });
   });
 };
 
