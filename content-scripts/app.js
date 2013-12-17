@@ -1,31 +1,22 @@
+// =================
+// KEYDOWN LISTENERS
+// =================
+
 var listenForAltS = function() {
   $(document).on('keydown', function(e){
-    // alt-s to enter speed read mode
     if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
+    listenForWordClicks();
   });
 };
 
-listenForAltS();
-
-$('body').on('click', '.sr', function(event){
-  $('.selected').removeClass('selected');
-  $(this).addClass('selected');
-});
-
-var play = function(intervalID) {
-  intervalID = setInterval(selectNext, 300);
-  $(document).keydown(function(e) {
-    window.clearInterval(intervalID);
+var listenForWordClicks = function() {
+  $('body').on('click', '.sr', function(event){
+    $('.selected').removeClass('selected');
+    $(this).addClass('selected');
   });
 };
 
-var enterSpeedReadMode = function() {
-  // add css classes
-  wrapChunksInSpans();
-  $('.sr').first().addClass('selected');
-  $('.sr').addClass('faded');
-
-  // add keypress listeners
+var listenForSRNavigartionKeys = function() {
   $(document).keydown(function(e){
     // enter
     if (e.keyCode === 13) play();
@@ -38,6 +29,20 @@ var enterSpeedReadMode = function() {
   });
 };
 
+listenForAltS();
+
+// =================
+// HELPER METHODS
+// =================
+
+var enterSpeedReadMode = function() {
+  // add css classes
+  wrapChunksInSpans();
+  $('.sr').first().addClass('selected');
+  $('.sr').addClass('faded');
+  listenForSRNavigartionKeys();
+};
+
 var exitSpeedReadMode = function() {
   unwrapTextFromSpans();
   // TODO: check if it causes problems
@@ -45,20 +50,12 @@ var exitSpeedReadMode = function() {
   listenForAltS();
 };
 
-//gradual select
-// var selectNext = function() {
-  // if ($('.sr.selected').next().length === 0) {
-  //   var nextAvailable = $('.sr.selected').parent().next().find('.sr')[0];
-  //   $('.sr.selected').removeClass('selected');
-  //   $(nextAvailable).addClass('selected');
-  // } else {
-  //   $next = $('.sr.selected').next();
-  //   $next.addClass('selected');
-  //   setTimeout(function() {
-  //     $next.removeClass('selected');
-  //   }, 1000);
-  // }
-// };
+var play = function(intervalID) {
+  intervalID = setInterval(selectNext, 300);
+  $(document).keydown(function(e) {
+    window.clearInterval(intervalID);
+  });
+};
 
 var selectNext = function() {
   if ($('.sr.selected').next().length === 0) {
@@ -136,7 +133,6 @@ var wrapChunksInSpans = function() {
         var words = $(node).text().split(' ');
 
         words.forEach(function(word) {
-          debugger;
           if (checkForPhraseEnd(word, phraseLength)) checkPhraseLength();
           if (word === '') phrase.push('');
           if (word !== '') {
