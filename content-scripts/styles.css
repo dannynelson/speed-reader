@@ -1,0 +1,11 @@
+.sr {
+  transition: 0.1s;
+}
+
+.sr.faded {
+  opacity: 0.4;
+}
+
+.sr.selected {
+  opacity: 1;
+}

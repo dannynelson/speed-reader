@@ -1,13 +1,21 @@
 {
   "manifest_version": 2,
+
   "name": "Speed Reader",
   "version": "1.0.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+
+  "options_page": "options.html",
 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "css": ["styles.css"],
-      "js": ["jquery.js", "app.js", "parts-of-speech/verbs.js", "parts-of-speech/prepositions.js", "parts-of-speech/conjunctions.js"]
+      "css": ["content-scripts/styles.css"],
+      "js": ["content-scripts/jquery.js", "content-scripts/app.js", "content-scripts/parts-of-speech/verbs.js", "content-scripts/parts-of-speech/prepositions.js", "content-scripts/parts-of-speech/conjunctions.js"]
     }
   ]
 }
