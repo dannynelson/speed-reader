@@ -13,7 +13,7 @@ $('body').on('click', '.sr', function(event){
 });
 
 var play = function(intervalID) {
-  intervalID = setInterval(selectNext, 400);
+  intervalID = setInterval(selectNext, 300);
   $(document).keydown(function(e) {
     window.clearInterval(intervalID);
   });
@@ -44,6 +44,21 @@ var exitSpeedReadMode = function() {
   $(document).off('keydown');
   listenForAltS();
 };
+
+//gradual select
+// var selectNext = function() {
+  // if ($('.sr.selected').next().length === 0) {
+  //   var nextAvailable = $('.sr.selected').parent().next().find('.sr')[0];
+  //   $('.sr.selected').removeClass('selected');
+  //   $(nextAvailable).addClass('selected');
+  // } else {
+  //   $next = $('.sr.selected').next();
+  //   $next.addClass('selected');
+  //   setTimeout(function() {
+  //     $next.removeClass('selected');
+  //   }, 1000);
+  // }
+// };
 
 var selectNext = function() {
   if ($('.sr.selected').next().length === 0) {
@@ -95,40 +110,55 @@ var wrapChunksInSpans = function() {
   $('p').each(function(i, p) {
     var $childNodes = $(p.childNodes).clone(); //make a duplicate
     $(p).html('');
-    var phrase = '';
+    var phrase = [];
     var phraseLength = 0;
 
-    var appendPhraseToNode = function() {
-      phrase = '<span class="sr">' + phrase +'</span>';
-      $(p).append(phrase);
-      phrase = '';
+    var checkPhraseLength = function() {
+      if (phraseLength >= 5) {
+        var median = Math.ceil(phrase.length / 2);
+        var newPhrase = phrase.splice(median);
+        appendPhraseToNode(phrase);
+        appendPhraseToNode(newPhrase);
+      } else {
+        appendPhraseToNode(phrase);
+      }
+      phrase = [];
       phraseLength = 0;
+    };
+
+    var appendPhraseToNode = function(phrase) {
+      phrase = '<span class="sr"> ' + phrase.join(' ') +' </span>';
+      $(p).append(phrase);
     };
 
     $childNodes.each(function(j, node) {
       if (node.nodeName === "#text") {
         var words = $(node).text().split(' ');
+
         words.forEach(function(word) {
-          if (checkForPhraseEnd(word, phraseLength)) appendPhraseToNode();
-          if (word === '') phrase += ' ';
+          debugger;
+          if (checkForPhraseEnd(word, phraseLength)) checkPhraseLength();
+          if (word === '') phrase.push('');
           if (word !== '') {
-            phrase += word + ' ';
+            phrase.push(word);
             phraseLength++;
-            if (word[word.length-1] === '.' || word[word.length-1] === ';' || word[word.length-1] === ',') appendPhraseToNode();
+            if (word[word.length-1] === '.' || word[word.length-1] === ';' || word[word.length-1] === ',') checkPhraseLength();
           }
         });
       } else {
         phraseLength += $(node).text().split(' ').length || 0; //calculate number of contained words
         var html = $('<div>').append($(node).clone()).html(); //convert $node to html string
-        phrase += html; //append to phrase
+        phrase.push(html); //append to phrase
       }
     });
   });
 };
 
+
+
 var checkForPhraseEnd = function(word, phraseLength) {
   return phraseLength > 2 &&
-  (prepositions[word] || verbs[word] || conjunctions[word] || word[word.length-2]+word[word.length-1] === 'ed') ||
+  (prepositions[word] || verbs[word] || verbs[word.slice(0, word.length-1)] || conjunctions[word] || word[word.length-2]+word[word.length-1] === 'ed') ||
   (word[0] === '(' || word[0] === '"');
 };
 
