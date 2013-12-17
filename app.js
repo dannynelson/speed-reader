@@ -17,7 +17,7 @@ var play = function(intervalID) {
 
 var enterSpeedReadMode = function() {
   // add css classes
-  wrapTextInSpans();
+  wrapChunksInSpans();
   $('.sr').first().addClass('selected');
   $('.sr').addClass('faded');
 
@@ -44,9 +44,16 @@ var exitSpeedReadMode = function() {
 };
 
 var selectNext = function() {
-  $next = $('.sr.selected').next();
-  $('.sr.selected').removeClass('selected');
-  $next.addClass('selected');
+  debugger;
+  if ($('.sr.selected').next().length === 0) {
+    debugger;
+    var nextAvailable = $('.sr.selected').parent().next().find('.sr')[0];
+    $(nextAvailable).addClass('selected');
+  } else {
+    $next = $('.sr.selected').next();
+    $('.sr.selected').removeClass('selected');
+    $next.addClass('selected');
+  }
 };
 
 var selectPrev = function() {
@@ -55,7 +62,7 @@ var selectPrev = function() {
   $prev.addClass('selected');
 };
 
-// var wrapTextInSpans = function() {
+// var wrapSingleWordsInSpans = function() {
 //   debugger;
 //   $('p').each(function(i, item) {
 //     $(item.childNodes).each(function(j, node) {
@@ -77,25 +84,24 @@ var selectPrev = function() {
 //   });
 // };
 
-var wrapTextInSpans = function() {
+var wrapChunksInSpans = function() {
   $('p').each(function(i, p) {
     var $childNodes = $(p.childNodes).clone(); //make a duplicate
     $(p).html('');
     var phrase = '';
     var phraseLength = 0;
     $childNodes.each(function(j, node) {
-      // for text
       if (node.nodeName === "#text") {
         var words = $(node).text().split(' ');
         words.forEach(function(word) {
-          if (phraseLength > 1 && (prepositions[word] || verbs[word] || conjunctions[word]) || word[0] === '(' || word[1] === '(') {
+          if (phraseLength > 1 && (prepositions[word] || verbs[word] || conjunctions[word]) || word[0] === '(' || word[0] === '"') {
             phrase = '<span class="sr">' + phrase +'</span>';
             $(p).append(phrase);
             phrase = '';
             phraseLength = 0;
           }
           if (word === '') {
-            phrase += ' '
+            phrase += ' ';
           } else {
             phrase += word + ' ';
             phraseLength++;
@@ -115,7 +121,6 @@ var wrapTextInSpans = function() {
     });
   });
 };
-
 
 var unwrapTextFromSpans = function() {
   $('.sr').contents().unwrap();
