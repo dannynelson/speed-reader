@@ -160,8 +160,8 @@ var wrapSingleWordsInSpans = function() {
 
 var wrapChunksInSpans = function() {
   // helper functions
-  var wrapWithSpan = function(node, spanClassName) {
-    return $(node).wrap('<span></span>').addClass(spanClassName);
+  var wrapWithSpan = function(text, spanClassName) {
+    return '<span class="'+ spanClassName +'">' + text + '</span>';
   };
 
   var textToPhrases = function(string) {
@@ -171,15 +171,23 @@ var wrapChunksInSpans = function() {
         phrases[i] = splitTextByPartsOfSpeech(phrases[i]);
       }
     }
-    return flattenArray(phrases);
+    phrases = _.flatten(phrases);
+    var finalPhrases = [];
+    for (i = 0; i < phrases.length; i++) {
+      var wordCount = findPhraseWordCount(phrases[i]);
+      if (wordCount >= 6) {
+        finalPhrases.push(splitTextInHalf(phrases[i]));
+      } else {
+        finalPhrases.push(phrases[i]);
+      }
+    }
+    return _.flatten(finalPhrases);
   };
 
   var wrapPhrasesWithSpans = function(phrasesArr) {
-    var newPhrases = [];
-    phrasesArr.forEach(function(phrase) {
-      newPhrases.push(wrapWithSpan(phrase, 'sr'));
+    return _(phrasesArr).map(function(phrase) {
+      return wrapWithSpan(phrase, 'sr faded');
     });
-    return newPhrases;
   };
 
   var flattenArray = function(array) {
@@ -202,7 +210,40 @@ var wrapChunksInSpans = function() {
     phraseWords = [];
 
     phrase.split(' ').forEach(function(word) {
-      if (verbs[word] || prepositions[word] || conjunctions[word]) {
+      if (phraseWords.length > 2 && (prepositions[word] || conjunctions[word])) {
+        phrases.push(phraseWords.join(' '));
+        phraseWords = [];
+      }
+      phraseWords.push(word);
+    });
+
+    phrases.push(phraseWords.join(' '));
+    return phrases;
+  };
+
+  var splitTextInHalf = function(phrase) {
+    phrases = [];
+    phraseWords = [];
+    var words = phrase.split(' ');
+    var median = Math.floor(words.length / 2);
+    words.forEach(function(word, i) {
+      if (i === median) {
+        phrases.push(phraseWords.join(' '));
+        phraseWords = [];
+      }
+      phraseWords.push(word);
+    });
+
+    phrases.push(phraseWords.join(' '));
+    return phrases;
+  };
+
+  var splitTextByVerbs = function(phrase) {
+    phrases = [];
+    phraseWords = [];
+
+    phrase.split(' ').forEach(function(word) {
+      if (phraseWords.length > 2 && (verbs[word] || verbs[word.slice(0, word.length-1)]) || verbs[word.slice(0, word.length-2)]) {
         phrases.push(phraseWords.join(' '));
         phraseWords = [];
       }
@@ -225,24 +266,26 @@ var wrapChunksInSpans = function() {
     string.split(' ').forEach(function(word) {
       if ( (/[\("]/).test(word[0]) ) addPhrase();
       phraseWords.push(word);
-      if ( (/[.,;"!\)]/).test(word[word.length-1]) ) addPhrase();
+      if ( (/[.,;"”!-\)]/).test(word[word.length-1]) ) addPhrase();
     });
 
     return phrases;
   };
 
+  // main logic
   $('p').each(function(i, p) {
-    
     var $childNodes = $(p.childNodes).clone();// make a duplicate
     $(p).html('');// clear original
 
     $childNodes.each(function(j, node) {
       if (node.nodeName === "#text") {
-        node = wrapWithSpan(node, 'sr-text');
+        node = wrapWithSpan($(node).text(), 'sr-text');
       }
-      var phrases = textToPhrases(node.innerHTML);
+      var phrases = textToPhrases($(node).text());
       phrases = wrapPhrasesWithSpans(phrases);
       newNode = phrases.join(' ');
+      var $newNode = $(node).html(newNode);
+      $(p).append($newNode);
     });
   });
 };
