@@ -6,6 +6,10 @@
   opacity: 0.4;
 }
 
-.sr.selected {
+.sr.faded.selected {
   opacity: 1;
+}
+
+.sr.underlined.selected {
+  text-decoration: underline;
 }

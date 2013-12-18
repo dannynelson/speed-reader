@@ -71,6 +71,7 @@ var play = function(intervalID) {
 };
 
 var selectNext = function() {
+  debugger;
   if ($('.sr.selected').next().length === 0) {
     var nextAvailable = $('.sr.selected').parent().next().find('.sr')[0];
     $('.sr.selected').removeClass('selected');
@@ -108,7 +109,6 @@ var wrapSingleWordsInSpans = function() {
         var words = $node.text().split(' ');
         html = ' ';
         words.forEach(function(word) {
-          debugger;
           if (word !== '') html += '<span class="sr">' + word + ' </span>';
         });
         html += ' ';
@@ -148,7 +148,11 @@ var wrapChunksInSpans = function() {
 
   var wrapPhrasesWithSpans = function(phrasesArr) {
     return _(phrasesArr).map(function(phrase) {
-      return wrapWithSpan(phrase, 'sr');
+      if (phrase !== '') {
+        return wrapWithSpan(phrase, 'sr');
+      } else {
+        return phrase;
+      }
     });
   };
 
@@ -228,30 +232,20 @@ var wrapChunksInSpans = function() {
     string.split(' ').forEach(function(word) {
       if ( (/[\("“]/).test(word[0]) ) addPhrase();
       phraseWords.push(word);
-      if ( (/[.,:;"”!?-\)\]]/).test(word[word.length-1]) ) addPhrase();
+      if ( (/[.,:;"”!-\)\]]/).test(word[word.length-1]) ) addPhrase();
     });
 
     addPhrase();
-
     return phrases;
   };
 
   // main logic
   $('p, li').each(function(i, p) {
-    // var $childNodes = $(p.childNodes).clone();// make a duplicate
-    // $(p).html('');// clear original
     var text = $(p).text();
-
-    // text.each(function(j, node) {
-    //   if (node.nodeName === "#text") {
-    //     node = wrapWithSpan($(node).text(), 'sr-text');
-    //   }
-      var phrases = textToPhrases(text);
-      phrases = wrapPhrasesWithSpans(phrases);
-      newNode = phrases.join(' ');
-      // var $newNode = $(node).html(newNode);
-      $(p).html(newNode);
-    // });
+    var phrases = textToPhrases(text);
+    phrases = wrapPhrasesWithSpans(phrases);
+    newNode = phrases.join(' ');
+    $(p).html(newNode);
   });
 };
 
