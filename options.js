@@ -7,7 +7,18 @@ $(document).ready(function() {
 var saveChanges = function() {
   var speed = $('.speed-selection').val();
   speed = parseInt(speed);
-  chrome.storage.local.set({'speed': speed});
+
+  var style = $('.style').val();
+
+  chrome.storage.local.clear(function() {
+    console.log('Storage Cleared');
+  });
+  
+  chrome.storage.local.set({
+    'speed': speed,
+    'style': style
+  });
+
   alert('Changes Saved!');
 };
 
