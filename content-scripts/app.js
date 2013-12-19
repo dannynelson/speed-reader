@@ -3,9 +3,9 @@ var $oldHTML; //save copy of old html
 var settings;
 
 chrome.storage.local.get(null, function (result) {
-  debugger;
   settings = result;
 });
+
 
 // =================
 // EVENT LISTENERS
@@ -18,6 +18,7 @@ var listeners = {
       if (e.altKey && e.keyCode === 83) enterSpeedReadMode();
       listeners.wordClicks();
     });
+
   },
 
   wordClicks: function() {
@@ -81,6 +82,8 @@ var selectNext = function() {
     $('.sr.selected').removeClass('selected');
     $next.addClass('selected');
   }
+  var text = $('.sr.selected').text()
+  chrome.runtime.sendMessage({method:'setText', text: text});
 };
 
 var selectPrev = function() {

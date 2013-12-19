@@ -1,6 +1,6 @@
 .sr {
-  transition: 0.05s;
-}
+/*  transition: 0.1s;
+*/}
 
 .sr.faded {
   opacity: 0.4;
